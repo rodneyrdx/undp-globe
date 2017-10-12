@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <title>geoFlow</title>
+</head>
+<style>
+    .landTooltip {
+        position: absolute;
+        display: none;
+        pointer-events: none;
+        background: #fff;
+        padding: 5px;
+        text-align: left;
+        border: solid #ccc 1px;
+        color: #666;
+        font-size: 14px;
+        font-family: sans-serif;
+    }
+    
+    .countries {
+        fill: #aaa;
+    }
+    
+    .focused {
+        fill: #22DD22;
+    }
+    
+    .countries:hover {
+        fill: #FFCC11;
+        stroke-width: 1px;
+    }
+    
+    html,
+    body {
+        min-height: 100%;
+        height: 100%;
+        margin: 0;
+    }
+    
+    .wrapper {
+        display: flex;
+        flex-direction: column;
+        width: 70%;
+        height: 500px;
+    }
+    
+    #world {
+        flex: 1 1;
+    }
+    /* works but very choppy */
+    
+    .flowPath {
+        fill: none;
+        opacity: 0.5;
+        stroke-width: 1;
+        stroke-miterlimit: 10;
+        stroke-dasharray: 12, 4;
+    }
+    
+    .arcPath {
+        fill: none;
+        opacity: 0.5;
+        stroke-width: 1;
+        stroke-dasharray: 10, 4;
+        animation: flow 1s linear infinite;
+        -webkit-animation: flow 1s linear infinite;
+    }
+    
+    @keyframes flow {
+        from {
+            stroke-dashoffset: 14;
+        }
+        to {
+            stroke-dashoffset: 0;
+        }
+    }
+    
+    @-webkit-keyframes flow {
+        from {
+            stroke-dashoffset: 14;
+        }
+        to {
+            stroke-dashoffset: 0;
+        }
+    }
+    
+    .hiv-world .HIV {
+        fill: rgb(236, 26, 26);
+    }
+    
+    .hiv-world .HIV-inactive {
+        fill: rgb(221, 96, 96);
+    }
+    
+    .ma-world .MA {
+        fill: rgb(26, 40, 236);
+    }
+    
+    .ma-world .MA-inactive {
+        fill: rgb(84, 94, 235);
+    }
+    
+    .cc-world .CC {
+        fill: rgb(72, 238, 6);
+    }
+    
+    .cc-world .CC-inactive {
+        fill: rgb(148, 233, 114);
+    }
+</style>
+
+<body>
+    <div class="wrapper" id="cosmos">
+        <div id="world"></div>
+        <div class="controls">
+            <button id="hiv">HIV</button>
+            <button id="cc">Cross Cutting</button>
+            <button id="ma">Malaria</button>
+
+            <button id="globe">Map</button>
+
+        </div>
+    </div>
+</body>
+<link rel="stylesheet" type="text/css" href="cities.css" />
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
+<script src="https://d3js.org/topojson.v1.min.js"></script>
+<script src="https://d3js.org/queue.v1.min.js"></script>
+<script src="https://d3js.org/d3-timer.v1.min.js"></script>
+<!--script src="d3.geodesic.js"></script-->
+<script src="geoFlow.js"></script>
+<script src="gfDemo.js"></script>
+
+<script>
+    d3.select("#hiv").on("click", function() {
+        d3.select("#world").classed("hiv-world", !d3.select("#world").classed("hiv-world"));
+        d3.select("#world").classed("ma-world", false);
+        d3.select("#world").classed("cc-world", false);
+    });
+
+    d3.select("#ma").on("click", function() {
+        d3.select("#world").classed("ma-world", !d3.select("#world").classed("ma-world"));
+        d3.select("#world").classed("hiv-world", false);
+        d3.select("#world").classed("cc-world", false);
+    });
+
+    d3.select("#cc").on("click", function() {
+        d3.select("#world").classed("cc-world", !d3.select("#world").classed("cc-world"));
+        d3.select("#world").classed("ma-world", false);
+        d3.select("#world").classed("hiv-world", false);
+    });
+
+
+
+    globe = geoFlow();
+    d3.select('#world').call(globe);
+
+
+    d3.select("#globe").on("click", function() {
+        var globeTxt = d3.select(this).text() == "Globe" ? "Map" : "Globe";
+
+        console.log(this);
+        console.log(globeTxt);
+
+        d3.select(this).text(globeTxt);
+
+        if (globeTxt == "Globe") {
+            globe.spin(false);
+            globe.g2m();
+        } else {
+            globe.m2g();
+            setTimeout(function() {
+                globe.spin()
+            }, 2000);
+
+        }
+    });
+
+    var landTooltip = d3.select("body").append("div").attr("class", "landTooltip");
+
+    function landMouseOver(d) {
+        if (d.properties.name) {
+            landTooltip.text(d.properties.name)
+                .styles({
+                    "left": (d3.event.pageX + 7) + "px",
+                    "top": (d3.event.pageY - 15) + "px",
+                    "display": "block",
+                    "opacity": 1,
+                })
+        }
+    }
+
+    function landMouseMove(d) {
+        landTooltip
+            .styles({
+                "left": (d3.event.pageX + 7) + "px",
+                "top": (d3.event.pageY - 15) + "px",
+            })
+    }
+
+    function landMouseOut(d) {
+        landTooltip
+            .styles({
+                "opacity": 0,
+                "display": "none",
+            })
+    }
+
+    function landMouseClick(d) {
+        var current_focus = globe.options().land.focus;
+        var new_focus = current_focus == d.id ? undefined : d.id;
+        globe.changeFocus(new_focus);
+        globe.options({
+            land: {
+                focus: new_focus
+            }
+        }).update();
+    }
+
+    function runDemo() {
+        //globe.spin();
+        demo(tasks);
+    }
+
+    globe.events({
+        'ready': runDemo,
+        'land': {
+            'mouseover': landMouseOver,
+            'mousemove': landMouseMove,
+            'mouseout': landMouseOut,
+            'click': landMouseClick,
+        },
+    });
+
+    window.addEventListener('resize', onWindowResize, false);
+
+    queue()
+        .defer(d3.json, "world-countries.json")
+        .defer(d3.csv, "data.csv")
+        .await(globe.initialize);
+
+    function onWindowResize() {
+        globe.update({
+            sizeToFit: true
+        });
+    }
+
+    worldFile = function(file) {
+        file = file || "world-countries.json";
+        d3.json(file, function(error, land) {
+            globe.data(land).update();
+        });
+    }
+
+    occasions = function() {
+        /*return new Promise(function(resolve, reject) {
+            // d3.json('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson', function(error, data) {
+            d3.json('all_day.geojson', function(error, data) {
+                if (!error) {
+                    globe.occasions(data).update();
+                    globe.update();
+                    globe.pulse();
+                    resolve();
+                } else {
+                    reject(error);
+                }
+            });
+        });*/
+    }
+
+    var tasks = [{
+            fx: globe.zoom2,
+            params: ['Russia'],
+            delay: undefined
+        }, {
+            fx: globe.zoom2,
+            params: ['Canada'],
+            delay: undefined
+        }, {
+            fx: globe.zoom2,
+            params: ['Chile'],
+            delay: undefined
+        }, {
+            fx: globe.g2m,
+            params: [],
+            delay: undefined
+        }, {
+            fx: globe.zoom2,
+            params: ['Indonesia'],
+            delay: undefined
+        }, {
+            fx: globe.duration,
+            params: [3000],
+            delay: 0
+        }, {
+            fx: globe.m2g,
+            params: [],
+            delay: undefined
+        }
+        /*,
+
+                {
+                    fx: globe.options,
+                    params: [{
+                        graticule: {
+                            width: '1px'
+                        }
+                    }],
+                    delay: 0
+                }, {
+                    fx: globe.oceans,
+                    params: ['blue'],
+                    delay: 0
+                }, {
+                    fx: globe.update,
+                    params: [],
+                    delay: 0
+                }, {
+                    fx: globe.coords,
+                    params: [
+                        [150, -150, 150]
+                    ],
+                    delay: undefined
+                }, {
+                    fx: globe.options,
+                    params: [{
+                        graticule: {
+                            width: '0px'
+                        },
+                        geodesic: {
+                            width: '1px'
+                        }
+                    }],
+                    delay: 0
+                }, {
+                    fx: globe.update,
+                    params: [],
+                    delay: 0
+                }, {
+                    fx: globe.reset,
+                    params: [],
+                    delay: undefined
+                }, {
+                    fx: globe.options,
+                    params: [{
+                        geodesic: {
+                            width: '0px'
+                        }
+                    }],
+                    delay: 0
+                },
+
+                {
+                    fx: globe.land,
+                    params: ['black'],
+                    delay: 0
+                }, {
+                    fx: globe.oceans,
+                    params: ['black'],
+                    delay: 0
+                }, {
+                    fx: globe.surround,
+                    params: ['black'],
+                    delay: 0
+                }, {
+                    fx: globe.boundaries,
+                    params: ['black'],
+                    delay: 0
+                }, {
+                    fx: globe.cities,
+                    params: ['#ffba00'],
+                    delay: 0
+                }, {
+                    fx: globe.update,
+                    params: [],
+                    delay: 500
+                }, {
+                    fx: globe.spin,
+                    params: [],
+                    delay: 5000
+                }, {
+                    fx: worldFile,
+                    params: [],
+                    delay: 3000
+                }, {
+                    fx: globe.spin,
+                    params: [false],
+                    delay: 1000
+                },
+
+                {
+                    fx: globe.land,
+                    params: ['green'],
+                    delay: 0
+                }, {
+                    fx: globe.oceans,
+                    params: ['blue'],
+                    delay: 0
+                }, {
+                    fx: globe.surround,
+                    params: ['white'],
+                    delay: 0
+                }, {
+                    fx: globe.boundaries,
+                    params: ['white'],
+                    delay: 0
+                }, {
+                    fx: globe.update,
+                    params: [],
+                    delay: 0
+                },
+
+                {
+                    fx: globe.options,
+                    params: [{
+                        display: {
+                            cities: false
+                        }
+                    }],
+                    delay: 0
+                }, {
+                    fx: globe.update,
+                    params: [],
+                    delay: 0
+                }, {
+                    fx: globe.zoom2,
+                    params: ['USA'],
+                    delay: undefined
+                }, {
+                    fx: globe.scale,
+                    params: [200],
+                    delay: undefined
+                }, {
+                    fx: occasions,
+                    params: [],
+                    delay: undefined
+                }, {
+                    fx: globe.update,
+                    params: [],
+                    delay: 10000
+                }, {
+                    fx: globe.options,
+                    params: [{
+                        display: {
+                            flows: true
+                        }
+                    }],
+                    delay: 0
+                }, {
+                    fx: globe.update,
+                    params: [],
+                    delay: 5000
+                }, {
+                    fx: globe.options,
+                    params: [{
+                        world: {
+                            surround: 'black'
+                        },
+                        display: {
+                            stars: true
+                        }
+                    }],
+                    delay: 0
+                }, {
+                    fx: globe.update,
+                    params: [],
+                    delay: 0
+                }, {
+                    fx: globe.reset,
+                    params: [],
+                    delay: 4000
+                }, {
+                    fx: globe.options,
+                    params: [{
+                        display: {
+                            flows: false
+                        }
+                    }],
+                    delay: 0
+                }, {
+                    fx: globe.update,
+                    params: [],
+                    delay: 0
+                },*/
+    ];
+</script>
+</script>
+
+</html>
