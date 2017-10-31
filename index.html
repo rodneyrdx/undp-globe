@@ -6,241 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
     <title>geoFlow</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #fafafa;
-            font-family: "Lato", sans-serif;
-        }
-        
-        .wrapper {
-            margin: 0;
-            padding: 0;
-        }
-        
-        #world {
-            display: flex;
-        }
-        
-        .country1 {
-            fill: rgba(66, 45, 14, 0.6);
-            stroke-opacity: 1;
-        }
-        
-        .graticule {
-            fill: none;
-            stroke: black;
-            stroke-width: .5;
-            opacity: .2;
-        }
-        
-        .labels {
-            font: 8px sans-serif;
-            fill: black;
-            opacity: .5;
-            display: none;
-        }
-        
-        .noclicks {
-            pointer-events: none;
-        }
-        
-        .country path {
-            stroke: rgb(80, 64, 39);
-            stroke-linejoin: round;
-            stroke-width: 0.6;
-            /*fill: rgb(117, 87, 57);*/
-            /*opacity: .1;*/
-        }
-        
-        .country path:hover {
-            /*fill-opacity: .1;*/
-            stroke: rgba(80, 64, 39, 0.6);
-            stroke-width: 1;
-            opacity: 1;
-            fill: #FFCC11;
-        }
-        
-        hr {
-            border: none;
-            height: 1px;
-            opacity: 0.25;
-            background-color: black;
-        }
-        
-        .hiv-world .HIV {
-            fill: rgba(236, 26, 26, 0.7);
-        }
-        
-        .hiv-world .HIV-inactive {
-            fill: rgba(221, 96, 96, 0.7);
-        }
-        
-        .ma-world .MA {
-            fill: rgba(26, 40, 236, 0.7);
-        }
-        
-        .ma-world .MA-inactive {
-            fill: rgba(84, 94, 235, 0.7);
-        }
-        
-        .tb-world .TB {
-            fill: rgba(72, 238, 6, 0.7);
-        }
-        
-        .tb-world .TB-inactive {
-            fill: rgba(148, 233, 114, 0.7);
-        }
-        
-        .landTooltip {
-            position: absolute;
-            display: none;
-            pointer-events: none;
-            background: #fff;
-            padding: 5px;
-            text-align: left;
-            border: solid #ccc 1px;
-            color: #666;
-            font-size: 14px;
-            font-family: sans-serif;
-        }
-        /**** controls *****/
-        
-        .controls-container {
-            width: 355px;
-        }
-        
-        .controls-container {
-            background: hsla(0, 0%, 100%, .7);
-            border-radius: 2px;
-            -webkit-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .12);
-            box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .12);
-            margin: 1.5rem 0 0 1rem;
-            padding: .5rem 1rem;
-            z-index: 2;
-        }
-        
-        .selectors-container {
-            display: flex;
-        }
-        
-        .divider {
-            clear: both;
-            margin: 1rem -1rem;
-            height: 1px;
-            opacity: 0.25;
-            border: none;
-            background-color: rgba(0, 0, 0, .25);
-        }
-        /**** radio selectors ****/
-        
-        .radio-container {
-            display: flex;
-        }
-        
-        .dis-selector {
-            flex-grow: 1;
-        }
-        
-        input[type="radio"] {
-            display: none;
-        }
-        
-        input[type="radio"]+label span {
-            /*background-color: #292321;*/
-        }
-        
-        #hiv+label {
-            color: rgb(236, 26, 26);
-        }
-        
-        #hiv+label span {
-            border: 1px solid rgb(236, 26, 26);
-        }
-        
-        #hiv:checked+label span {
-            background-color: rgb(236, 26, 26);
-            box-shadow: inset 0 0 0 2px #fff;
-        }
-        
-        #ma+label {
-            color: rgb(26, 40, 236);
-        }
-        
-        #ma+label span {
-            border: 1px solid rgb(26, 40, 236);
-        }
-        
-        #ma:checked+label span {
-            background-color: rgb(26, 40, 236);
-            box-shadow: inset 0 0 0 2px #fff;
-        }
-        
-        #tb+label {
-            color: rgb(72, 238, 6);
-        }
-        
-        #tb+label span {
-            border: 1px solid rgb(72, 238, 6);
-        }
-        
-        #tb:checked+label span {
-            background-color: rgb(72, 238, 6);
-            box-shadow: inset 0 0 0 2px #fff;
-        }
-        
-        input[type="radio"]+label span {
-            /*display: inline-block;
-            width: 19px;
-            height: 19px;
-            margin: -1px 4px 0px 10px;
-            vertical-align: middle;
-            cursor: pointer;
-            -moz-border-radius: 50%;
-            border-radius: 50%;*/
-            border-radius: 100%;
-            display: inline-block;
-            width: .875rem;
-            height: .875rem;
-            margin-top: 1px;
-            margin-right: .25rem;
-            position: relative;
-            vertical-align: top;
-            cursor: pointer;
-            -webkit-transition: all .25s ease;
-            -o-transition: all .25s ease;
-            transition: all .25s ease;
-        }
-        
-        input[type="radio"]+label span,
-        input[type="radio"]:checked+label span {
-            -webkit-transition: background-color 0.4s linear;
-            -o-transition: background-color 0.4s linear;
-            -moz-transition: background-color 0.4s linear;
-            transition: background-color 0.4s linear;
-        }
-        /*********************************/
-        
-        .focused {
-            fill: rgb(211, 30, 202) !important;
-        }
-        
-        .dis-result {
-            display: none;
-        }
-        
-        .indicator {
-            border-top: 1px dotted #ccc;
-            padding: 10px 0px;
-        }
-    </style>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 
 <body>
     <div class="wrapper" id="cosmos">
-        <div id="world">
+        <h1 class="title">Our Results</h1>
+        <div class="intro">
+
+        </div>
+        <h2 class="subtitle">Countries where we work</h2>
+        <div id="world" class="world-wrapper">
             <div class="controls-container">
                 <div class="selectors-container">
                     <div class="dis-selector">
@@ -257,7 +34,7 @@
                         <label for="tb"><span></span>Tuberculosis</label>
                     </div>
                 </div>
-                <hr class="divider/">
+                <hr class="divider">
                 <div class="dis-result hiv-results">
                     <ul>
                         <li>2.1 million people currently on HIV treatment (2017)</li>
@@ -265,7 +42,7 @@
                         <li>1 out of 6 people in Africa currently receiving HIV treatment</li>
                         <li>75% reduction in AIDS related deaths in Zimbabwe</li>
                     </ul>
-                    <button onclick="javascript:startTour('HIV')">View HIV Country Results</button>
+                    <a class="globalfootercard globalfootercard--blue" href="#" onclick="javascript:startTour('HIV')">View HIV Country Results</a>
                 </div>
                 <div class="dis-result ma-results">
                     <ul>
@@ -273,7 +50,7 @@
                         <li>9 countries have achieved 100% coverage with antimalarial drugs</li>
                         <li>57 million bed nets distributed</li>
                     </ul>
-                    <button onclick="javascript:startTour('MA')">View MALARIA Country Results</button>
+                    <a class="globalfootercard globalfootercard--blue" href="#" onclick="javascript:startTour('MA')">View MALARIA Country Results</a>
                 </div>
                 <div class="dis-result tb-results">
                     <ul>
@@ -281,32 +58,72 @@
                         <li>In 12 countries the case detection rate exceeds the global target of 70%</li>
                         <li>8 countries have seen TB incidence decrease by a third</li>
                     </ul>
-                    <button onclick="javascript:startTour('TB')">View MALARIA Country Results</button>
+                    <a class="globalfootercard globalfootercard--blue" onclick="javascript:startTour('TB')" href="#">View TB Country Results</a>
                 </div>
-                <hr class="divider/">
-                <div class="country-data">
-                    <h3 class="country-name"></h3>
-                    <h4 class="country-status"></h4>
+                <div class="how-to">
+                    <hr class="divider">
+                    <h4>How to use the globe:</h4>
+                    <div>[scroll/double-click to zoom]</div>
+                    <div>[click the ocean to spin the globe]</div>
+                    <div>[click a highlighted country to see its results]</div>
+                </div>
+            </div>
+            <div class="svg-wrapper">
+                <div class="country-data n">
+                    <h3><span class="country-name"></span> - <span class="country-status"></span></h3>
 
                 </div>
             </div>
         </div>
+        <div class="sankey-diag" style="margin-top: 100px;">
+            <svg id="svgSankey" width="1024" height="1000"></svg>
+        </div>
     </div>
 
-    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="http://d3js.org/d3.v4.min.js"></script>
     <script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
-    <script src="https://d3js.org/queue.v1.min.js"></script>
+    <script src="http://d3js.org/queue.v1.min.js"></script>
+    <script src="js/globe.js"></script>
+    <script src="https://unpkg.com/d3-sankey@0.7.1/build/d3-sankey.min.js"></script>
+    <script src="js/countries-sankey.js"></script>
     <script>
         window.Promise || document.write('<script src="https://unpkg.com/es6-promise@3.2.1/dist/es6-promise.min.js"><\/script>');
 
+        var country_names = {};
+        var id_to_names = {};
+        var data_per_country = {};
+        var data_per_disease = {};
+
+        var touring = false;
+        var spinning = false;
+        var disease = undefined;
+
+        var globeOptions = {
+            width: 775,
+            height: 600,
+            disease: undefined,
+            events: {
+                landMouseOver: landMouseOver,
+                landMouseOut: landMouseOut,
+                landMouseMove: landMouseMove,
+                landMouseClick: landMouseClick
+
+            }
+
+        };
+
+        var globe = globe(globeOptions);
+
         function changeDisease(dis) {
-            changeFocus(undefined);
+            d3.select('#world').classed('world-wrapper', false);
+            hideCountryInfo();
+            globe.changeFocus(undefined);
             disease = dis;
             if (touring) {
-                tour(false);
+                globe.tour(false);
             }
             if (!spinning) {
-                spin();
+                globe.spin();
             }
             d3.select(".country-name").html("");
             d3.select(".country-status").html("");
@@ -314,6 +131,7 @@
         }
 
         d3.select("#hiv").on("change", function() {
+            d3.select('.subtitle').text('Countries where we work on HIV');
             d3.select("#world").classed("hiv-world", !d3.select("#world").classed("hiv-world"));
             d3.select("#world").classed("ma-world", false);
             d3.select("#world").classed("tb-world", false);
@@ -330,6 +148,7 @@
         });
 
         d3.select("#ma").on("change", function() {
+            d3.select('.subtitle').text('Countries where we work on Malaria');
             d3.select("#world").classed("ma-world", !d3.select("#world").classed("ma-world"));
             d3.select("#world").classed("hiv-world", false);
             d3.select("#world").classed("tb-world", false);
@@ -346,6 +165,7 @@
         });
 
         d3.select("#tb").on("change", function() {
+            d3.select('.subtitle').text('Countries where we work on Tuberculosis');
             d3.select("#world").classed("tb-world", !d3.select("#world").classed("tb-world"));
             d3.select("#world").classed("ma-world", false);
             d3.select("#world").classed("hiv-world", false);
@@ -395,404 +215,25 @@
 
         function landMouseClick(d) {
 
-            var new_focus = current_focus == d.id ? undefined : d.id;
+            var new_focus = globe.current_focus == d.id ? undefined : d.id;
 
             if (data_per_country[new_focus] && disease && data_per_disease[disease][new_focus]) {
-                tour(false);
-                spin(false);
-                current_focus = new_focus;
-                //changeFocus(current_focus)
-                bounce2(d.properties.name);
+                globe.tour(false);
+                globe.spin(false);
+                coordsWcurrent_focus = new_focus;
+                //globe.changeFocus(current_focus)
+                globe.bounce2(d.properties.name);
             }
         }
 
-        var country_names = {};
-        var id_to_names = {};
-        var data_per_country = {};
-        var data_per_disease = {};
 
-        var width = 775,
-            height = 600;
-
-        var radius = 160; //Math.min(height * .45, width * .45);
-        var lngLmt = 80;
-
-        var proj = d3.geoOrthographic()
-            .translate([width / 2, height / 2])
-            .clipAngle(90)
-            .scale(160);
-
-        var path = d3.geoPath().projection(proj).pointRadius(2);
-
-
-        var svg = d3.select("#world").append("svg")
-            .attr("width", width)
-            .attr("height", height);
-
-        var ocean = undefined;
-        var shadow = undefined;
-        var globe = undefined;
-        var globeShading = undefined;
-
-        queue()
-            .defer(d3.json, "world-countries.json")
-            .defer(d3.csv, "data.csv")
-            .await(ready);
-
-        function ready(error, world, countryData) {
-            var ocean_fill = svg.append("defs").append("radialGradient")
-                .attr("id", "ocean_fill")
-                .attr("cx", "75%")
-                .attr("cy", "25%");
-            ocean_fill.append("stop").attr("offset", "5%").attr("stop-color", "#fff");
-            ocean_fill.append("stop").attr("offset", "100%").attr("stop-color", "#ababab");
-
-            var globe_highlight = svg.append("defs").append("radialGradient")
-                .attr("id", "globe_highlight")
-                .attr("cx", "75%")
-                .attr("cy", "25%");
-            globe_highlight.append("stop")
-                .attr("offset", "5%").attr("stop-color", "#ffd")
-                .attr("stop-opacity", "0.6");
-            globe_highlight.append("stop")
-                .attr("offset", "100%").attr("stop-color", "#ba9")
-                .attr("stop-opacity", "0.2");
-
-            var globe_shading = svg.append("defs").append("radialGradient")
-                .attr("id", "globe_shading")
-                .attr("cx", "55%")
-                .attr("cy", "45%");
-            globe_shading.append("stop")
-                .attr("offset", "30%").attr("stop-color", "#fff")
-                .attr("stop-opacity", "0")
-            globe_shading.append("stop")
-                .attr("offset", "100%").attr("stop-color", "#505962")
-                .attr("stop-opacity", "0.3")
-
-            var drop_shadow = svg.append("defs").append("radialGradient")
-                .attr("id", "drop_shadow")
-                .attr("cx", "50%")
-                .attr("cy", "50%");
-            drop_shadow.append("stop")
-                .attr("offset", "20%").attr("stop-color", "#000")
-                .attr("stop-opacity", ".5");
-            drop_shadow.append("stop")
-                .attr("offset", "100%").attr("stop-color", "#000")
-                .attr("stop-opacity", "0");
-
-            shadow = svg.append("ellipse")
-                .attr("cx", 400)
-                .attr("cy", height / 2 + radius + 10)
-                .attr("rx", proj.scale() * .90)
-                .attr("ry", proj.scale() * .25)
-                .attr("class", "noclicks")
-                .style("fill", "url(#drop_shadow)");
-
-            ocean = svg.append("circle")
-                .attr("cx", width / 2)
-                .attr("cy", height / 2)
-                .attr("r", proj.scale())
-                .attr("class", "noclicks")
-                .style("fill", "url(#ocean_fill)");
-
-            globeShading = svg.append("circle")
-                .attr("cx", width / 2).attr("cy", height / 2)
-                .attr("r", proj.scale())
-                //.attr("class", "noclicks")
-                .on("click", function() {
-                    //preventDefault();
-
-                    changeFocus(undefined);
-                    if (!touring && !spinning) {
-                        rotate2().then(function() {
-                            spin();
-                        })
-                    }
-                    return false;
-                })
-                .style("fill", "url(#globe_shading)");
-
-            if (!world.features) return null;
-            world.features.forEach(function(c) {
-                country_names[c.properties.name] = c;
-                id_to_names[c.id] = c.properties.name;
-            });
-
-            svg.append("g").attr("class", "country")
-                .selectAll("country")
-                .data(world.features)
-                .enter().append("path")
-                .attr("d", path)
-                .on("mouseover", landMouseOver)
-                .on("mouseout", landMouseOut)
-                .on("mousemove", landMouseMove)
-                .on("click", landMouseClick)
-                .attr("id", function(d, i) {
-                    return d.id;
-                });
-
-            var λ = d3.scaleLinear()
-                .domain([0, width])
-                .range([-180, 180]);
-
-            var φ = d3.scaleLinear()
-                .domain([0, width])
-                .range([90, -90]);
-
-            svg
-                .call(d3.drag()
-                    .subject(function() {
-                        var r = proj.rotate();
-                        return {
-                            x: λ.invert(r[0]),
-                            y: φ.invert(r[1])
-                        };
-                    })
-                    .on("drag", function() {
-                        window.spin(false);
-                        var lat = λ(d3.event.x);
-                        var lng = φ(d3.event.y);
-                        lng = lng > lngLmt ? lngLmt : lng < -lngLmt ? -lngLmt : lng;
-
-                        // insure that spinning globe is in sync with this transition
-                        //spin_rotation = [lat, lng];
-                        //spin_start = Date.now();
-
-                        proj.rotate([lat, lng]);
-                        //space.rotate([-lat, -lng]);
-                        refresh();
-                    }))
-
-            countryData.forEach(function(c) {
-                var activeCountry = c.Status === "1";
-                if (c.Country.length == 3) {
-                    if (!data_per_country[c.Country]) {
-                        data_per_country[c.Country] = {};
-                    }
-                    if (!data_per_country[c.Country][c.Disease]) {
-                        data_per_country[c.Country][c.Disease] = [];
-                    }
-                    data_per_country[c.Country][c.Disease].push(c);
-
-                    if (!data_per_disease[c.Disease]) {
-                        data_per_disease[c.Disease] = {};
-                    }
-                    if (!data_per_disease[c.Disease][c.Country]) {
-                        data_per_disease[c.Disease][c.Country] = [];
-                    }
-                    data_per_disease[c.Disease][c.Country].push(c)
-
-                    d3.select("#" + c.Country)
-                        .classed(c.Disease, true)
-                        .classed(c.Disease + "-inactive", !activeCountry)
-                }
-            });
-
-            globe = svg.append("circle")
-                .attr("cx", width / 2).attr("cy", height / 2)
-                .attr("r", proj.scale())
-                .attr("class", "noclicks")
-                .style("fill", "url(#globe_highlight)");
-
-
-            refresh();
-            startTour();
-        }
-
-        function refresh() {
-            svg.selectAll("path").attr("d", path);
-            if (ocean) {
-                ocean.attr("r", proj.scale());
-            }
-            if (globe) {
-                globe.attr("r", proj.scale());
-            }
-            if (globeShading) {
-                globeShading.attr("r", proj.scale());
-            }
-            if (shadow) {
-                shadow.attr("cx", width / 2 - 60).attr("cy", height / 2 + radius * proj.scale() * .0090 - 90)
-                    .attr("rx", proj.scale() * .90)
-                    .attr("ry", proj.scale() * .25)
-            }
-        }
-
-        var speed = 1e-2;
-        var spin_timer;
-        var spinning = false;
-
-        function spin(spin) {
-            spin = spin == undefined ? true : spin;
-            if (spin) {
-                spinning = true
-                spin_timer = d3.timer(function(elapsed) {
-                    proj.rotate([-speed * elapsed, 0, 0]);
-                    refresh();
-                });
-            } else if (spin_timer) {
-                spinning = false;
-                spin_timer.stop();
-                spin_timer = undefined;
-            }
-        }
-
-        function coords(coords, scale) {
-            return new Promise(function(resolve, reject) {
-                var current = proj.rotate();
-
-                coords = coords || proj.rotate();
-                scale = scale || proj.scale();
-                scale = Math.max(radius, scale);
-
-                // if already at target coordinates, do nothing; resolve.
-                if (current[0] == coords[0] && current[1] == coords[1] && current[2] == coords[2] && scale == proj.scale()) {
-                    resolve();
-                    return;
-                }
-
-                // insure that spinning globe is in sync with this transition
-                spin_rotation = coords;
-                spin_start = Date.now();
-
-                svg.transition()
-                    .duration(1500)
-                    .tween("rotate", function() {
-                        var r = d3.interpolate(proj.rotate(), coords);
-                        var s = d3.interpolate(proj.scale(), scale);
-                        return function(t) {
-                            proj.rotate(r(t)).scale(s(t));
-                            refresh();
-                        };
-                    })
-                    .on('end', resolve);
-            });
-        };
-
-        function zoom2(what, which, zoom) {
-            return new Promise(function(resolve, reject) {
-                which = which || 'country';
-                zoom = zoom == undefined ? false : zoom;
-                var coords = [0, 0, 0];
-                var scale = radius;
-
-                if (Object.keys(country_names).indexOf(what) >= 0) {
-                    coords = d3.geoCentroid(country_names[what]).map(function(m) {
-                        return -1 * m;
-                    });
-                    var b = d3.geoBounds(country_names[what]);
-                    var dx = b[1][0] - b[0][0];
-                    var dy = b[1][1] - b[0][1];
-                    var x = (b[0][0] + b[1][0]) / 2;
-                    var y = (b[0][1] + b[1][1]) / 2;
-                    bbox = .1 / Math.max(dx / width, dy / height);
-                    scale = zoom ? radius * bbox : radius;
-                    scale = Math.max(scale, radius);
-                    changeFocus(country_names[what].id);
-                } else {
-                    changeFocus(undefined);
-                }
-
-                if (coords.length == 2) coords.push(0);
-                window.coords(coords, 250 /*, scale*/ )
-                    .then(resolve, reject);
-            });
-        }
-
-        function rotate2(coords) {
-            coords = coords || [0, 0, 0];
-            return window.coords(coords, radius);
-        }
-
-        function bounce2(what, which) {
-            return new Promise(function(resolve, reject) {
-                rotate2().then(function() {
-                    window.zoom2(what, which).then(resolve, reject);
-                }, reject)
-            });
-        }
-
-        function scale(scale_pct) {
-            if (!arguments.length) return +((proj.scale() / radius) * 100).toFixed(2);
-            var scale = scale_pct / 100 * radius;
-            return coords(undefined, scale, true);
-        }
-
-        function changeFocus(focusID) {
-            if (focusID == undefined && !touring && !spinning) {
-                rotate2();
-            }
-            if (focusID && spinning) {
-                spin(false);
-            }
-            svg.selectAll("path")
-                .classed("focused", function(d, i) {
-                    var result = focusID && d && d.id && d.id == focusID ? current_focus = d.id : false;
-                    if (result && disease) {
-                        showCountryInfo(focusID, disease);
-                    }
-                    return result;
-                });
-
-        }
-
-        var tour_countries = [];
-        var tourDelay = 3000;
-        var disease = undefined;
-        var touring = false;
-
-        function tour(start, bounce) {
-            start = start == undefined ? true : start;
-            //disease = disease == undefined ? "HIV" : disease;
-            bounce = bounce == undefined ? true : bounce;
-
-            if (disease) {
-                tour_countries = Object.keys(data_per_disease[disease]).sort();
-            }
-
-            return new Promise(function(resolve, reject) {
-                if (!start || !disease) {
-                    touring = false;
-                    tour_countries = [];
-                    return resolve();
-                }
-                if (spinning) {
-                    spin(false);
-                }
-                touring = true;
-
-                nextCountry();
-
-                function nextCountry() {
-                    if (!tour_countries.length || !touring) {
-                        return resolve();
-                    }
-                    country = id_to_names[tour_countries.pop()];
-
-                    if (!country) {
-                        nextCountry();
-                    } else {
-                        //console.log(country);
-                        if (bounce) {
-                            window.bounce2(country)
-                                .then(delayNext, reject);
-                        } else {
-                            window.zoom2(country, undefined, false)
-                                .then(delayNext, reject);
-                        }
-                    }
-                }
-
-                function delayNext() {
-                    //showCountryInfo(country, disease);
-                    setTimeout(function() {
-                        nextCountry();
-                    }, tourDelay);
-
-                }
-            });
-        }
 
         var numberFormat = d3.format(",");
+
+        function hideCountryInfo() {
+            d3.select(".country-data").classed("shown", false);
+            d3.selectAll(".label").classed("shown", true);
+        }
 
         function showCountryInfo(country_id, disease) {
             if (country_id && disease) {
@@ -801,14 +242,19 @@
                 renderCountry(country, disease, data_per_disease[disease][country_id])
             }
 
+            d3.select(".country-data").classed("shown", true);
+            d3.selectAll(".label").classed("shown", false);
+
             function renderCountry(country, disease, data) {
                 console.log(country + " - ( " + disease + " )");
-                d3.select(".country-name").text("");
-                d3.select(".country-name").text(country);
+                d3.select(".country-name").html("");
+                d3.select(".country-name").html(country);
                 var seen_indicators = [];
                 if (data) {
-                    var grantStatus = data[0].Status == "1" ? "Active" : "Inactive";
-                    d3.select(".country-status").text(disease + " - " + grantStatus + " grant");
+                    var grantStatus = data[0].Status; // == "1" ? "Active" : "Inactive";
+                    d3.select(".country-status").classed("cs-Active", false);
+                    d3.select(".country-status").classed("cs-Inactive", false);
+                    d3.select(".country-status").text(grantStatus + " grant").classed("cs-" + grantStatus, true);
                     data.forEach(function(d) {
                         if (seen_indicators[d.Indicator]) {
                             if (seen_indicators[d.Indicator].year < d.Year) {
@@ -834,8 +280,12 @@
 
                     Object.keys(seen_indicators).forEach(function(ind) {
                         console.log(indicators[seen_indicators[ind].name] + ":" + seen_indicators[ind].value + " (" + seen_indicators[ind].year + ")");
-                        lines.push(indicators[seen_indicators[ind].name] + ": <b>" + numberFormat(seen_indicators[ind].value) + "</b>");
+                        //lines.push(indicators[seen_indicators[ind].name] + ": <b>" + numberFormat(seen_indicators[ind].value) + "</b>");
+                        lines.push(seen_indicators[ind].name + ": <b>" + numberFormat(seen_indicators[ind].value) + "</b>");
                     });
+                    if (data[0].Link) {
+                        lines.push("<a target='_blank' class='globalfootercard globalfootercard--green--inv' href='" + data[0].Link + "'>Visit Country Page</a>");
+                    }
 
                     sel = countryDataTxt.selectAll("div").data(lines);
 
@@ -851,28 +301,18 @@
 
         function startTour(aDisease) {
             disease = undefined;
-            spin(false);
-            changeFocus(undefined);
+            globe.spin(false);
+            globe.changeFocus(undefined);
 
-            tour(false).then(function() {
+            globe.tour(false).then(function() {
                 disease = aDisease;
-                tour(true, disease).then(function() {
-                    window.rotate2().then(function() {
-                        changeFocus(undefined);
-                        //window.spin();
+                globe.tour(true, disease).then(function() {
+                    globe.rotate2().then(function() {
+                        globe.changeFocus(undefined);
                     });
                 });
             });
-
-            /**/
         }
-        //spin();
-        /*setTimeout(function() {
-            spin(false);
-            bounce2("Russia").then(function(x, that) {
-                window.coords([30, 30])
-            });
-        }, 30000);*/
 
         function arrayRotate(arr, reverse) {
             if (reverse)
