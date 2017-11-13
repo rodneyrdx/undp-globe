@@ -342,7 +342,17 @@ input[type="radio"]:checked+label span {
     display: none;
     height: 100%;
 }
+.dis-result ul{
+    list-style-type: none;
+    margin-left: 10px;
+    padding: 0px;
+}
+.dis-result li{
+    list-style: none;
+    margin-bottom: 10px;
 
+}
+    
 .indicator {
     /*border-bottom: 1px dotted #ccc;*/
     /*padding: 10px 0px;*/
