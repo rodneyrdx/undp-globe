@@ -64,9 +64,11 @@
                 <div class="how-to">
                     <hr class="divider">
                     <h4>How to use the globe:</h4>
-                    <div>[scroll/double-click to zoom]</div>
+                    <!--div>[scroll/double-click to zoom]</div-->
                     <div>[click the ocean to spin the globe]</div>
                     <div>[click a highlighted country to see its results]</div>
+                    <div>[drag to stop spinning]</div>
+                    <div>[click on the legend to toggle visible countries]</div>
                 </div>
             </div>
             <div class="svg-wrapper">
@@ -78,8 +80,6 @@
             </div>
         </div>
         <div class="country-data n">
-            <h3><span class="country-name"></h3>
-            </span> - <span class="country-status"></span>
         </div>
         <div class="sankey-diag" style="margin-top: 100px;">
             <svg id="svgSankey" width="1024" height="1000"></svg>
@@ -272,6 +272,7 @@
             if (!country_id) {
                 return;
             }
+            $(".country-data").empty();
 
             d3.select(".country-name-svg").classed("shown", true);
 
@@ -282,14 +283,57 @@
             var country = id_to_names[country_id];
             var data = data_per_country[country_id];
 
+            var lines = [];
+            lines.push("<h3>"+ country +"</h3>");
+            lines.push("<hr class='dotted'>");
+            if(isGrant){
+                var countriesInGrant = [];
+                regional_grants[country_id].countries.forEach(function(c_id){
+                    countriesInGrant.push(id_to_names[c_id]);
+                });
+                lines.push("<div class='grant-counties'><span style='font-weight:bold;'>Countries in grant: </span><span style='font-size:12px;text-style:italic;'>" + countriesInGrant.join(", ") + "</span></div>");
+                lines.push("<hr class='dotted'>");
+            }
 
-            //console.log(country + " - ( " + disease + " )");
+            var link;
+            lines.push("<table>")
+                lines.push("<tr>")
+            Object.keys(data).forEach(function(dis){
+                data[dis].forEach(function(ind){
+                    var act = ind.Status == "Active";
+                    var status_str = act ? "<span class='cs-Active'>Active Grant</span>" :  "<span class='cs-Inactive'>Inactive Grant</span>";
+                    var highlight_column = disease && ind.Disease == disease;
+                    lines.push(highlight_column ? "<td class='highlight_column'>" : "<td>");
+                    lines.push("<span class='dis-headline'>" + dis_to_str(ind.Disease) + " - <span>" + status_str);
+                    lines.push("<hr>");
+                    lines.push("<div class='indicator'><span class='ind-name'>" + ind.Indicator + ": </span><span class='ind-value'>" + ind.Value + "</span></div>");
+                    lines.push("</td>")
+                    if(ind.Link){
+                        link = "<div style='margin:auto;width:20%;'><a target='_blank' class='globalfootercard globalfootercard--green' href='" + ind.Link + "'>Visit Country Results Page</a></div>";
+                    }
+                });
+            })
+            lines.push("</tr>")
+            lines.push("</table>")
 
-            //d3.select(".country-name").html("");
+            if(link){
+                lines.push(link);
+            }
+
+            $(".country-data").append(lines.join(""));
+
             d3.select(".country-name-svg").html(country);
-            d3.select(".country-name").html(country);
-
-            //lines.push("<a target='_blank' class='globalfootercard globalfootercard--green--inv' href='" + data[0].Link + "'>Visit Country Results Page</a>");
+        }
+        function dis_to_str(dis){
+            if(dis == "HIV"){
+                return "HIV/AIDS";
+            }
+            if(dis == "TB"){
+                return "Tuberculosis";
+            }
+            if(dis == "MA"){
+                return "Malaria";
+            }
         }
 
         function countryInGrant(country_id) {
@@ -347,7 +391,7 @@
         }
 
         function GlobeLoaded() {
-            var x = $(".ActiveCountry.InactiveCountry").removeClass("InactiveCountry");
+            $(".ActiveCountry.InactiveCountry").removeClass("InactiveCountry");
             updateLegend();
             $(".legend-item").click(function() {
                 var act = $(this).hasClass("active-grant");

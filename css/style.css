@@ -161,7 +161,7 @@ hr {
 
 .country-name-svg {
     box-sizing: border-box;
-    font-size: 12pt;
+    font: 14pt sans-serif;
     width: 80%;
     top: 48%;
     position: absolute;
@@ -172,30 +172,36 @@ hr {
     left: 10%;
     text-align: center;
     opacity: 0;
-    transition: all ease 1.8s;
+    transition: opacity ease 0.8s;
     z-index: -3;
     text-shadow: 1px 1px 1px rgb(63, 61, 61);
 }
 
 .country-data {
-    box-sizing: border-box;
+    /*box-sizing: border-box;
     font-size: 12pt;
-    width: 40%;
-    top: 52%;
-    position: absolute;
+    width: 100%;
+    margin: auto;
     line-height: 1.2;
     padding: 12px;
     background: rgba(0, 0, 0, 0.8);
     color: #fff;
     border-radius: 7px;
-    display: block;
-    left: 30%;
+    display: block;*/
+    background: hsla(0, 0%, 100%, .7);
+    border-radius: 2px;
+    -webkit-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .12);
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .12);
+    margin: 1.5rem 0 0 1rem;
+    padding: .5rem 1rem;
+    
     opacity: 0;
-    transition: all ease 0.8s;
-    z-index: -3;
+    transition: opacity ease 0.8s;
 }
 
-
+.country-data table{
+    width: 100%;
+}
 /* Creates a small triangle extender for the tooltip */
 
 
@@ -323,9 +329,12 @@ input[type="radio"]:checked+label span {
 /*********************************/
 
 .focused {
-    fill: rgb(211, 30, 202) !important;
-    stroke: white !important;
-    stroke-width: .5;
+    /*fill: rgb(211, 30, 202) !important;*/
+    fill: #FFFF99 !important;
+    /*fill: #CAB2D6 !important;*/
+    
+    /*stroke: white !important;*/
+    /*stroke-width: .5;*/
     opacity: 1;
 }
 
@@ -335,8 +344,8 @@ input[type="radio"]:checked+label span {
 }
 
 .indicator {
-    border-top: 1px dotted #ccc;
-    padding: 10px 0px;
+    /*border-bottom: 1px dotted #ccc;*/
+    /*padding: 10px 0px;*/
 }
 
 
@@ -406,6 +415,13 @@ a.globalfootercard--green--inv:active {
     color: #24b47e !important;
 }
 
+a.globalfootercard--green,
+a.globalfootercard--green:hover,
+a.globalfootercard--green:active {
+    background-color: #24b47e !important;
+    color: #fff !important;
+}
+
 .how-to {
     font-family: Courier New, Courier, monospace;
     font-size: 12px;
@@ -439,4 +455,8 @@ a.globalfootercard--green--inv:active {
 
 .legend .off-legend {
     opacity: 0.2;
+}
+
+.highlight_column span, .highlight_column div{
+    font-weight: bold;
 }

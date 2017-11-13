@@ -158,13 +158,13 @@ var globe = function(options) {
                     proj.rotate([lat, lng]);
                     //space.rotate([-lat, -lng]);
                     refresh();
-                }))
-            .call(d3.zoom()
+                }));
+            /*.call(d3.zoom()
                 .scaleExtent([0.5, 2.0])
                 .on('zoom', function() {
                     proj.scale(radius * d3.event.transform.k);
                     refresh();
-                }))
+                }))*/
 
         countryData.forEach(function(c) {
             var activeCountry = c.Status === "Active";
