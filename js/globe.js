@@ -21,7 +21,7 @@ var globe = function(options) {
     var shadow = undefined;
     var globe = undefined;
     var globeShading = undefined;
-    var centroids = undefined;
+    var centroids = [];
 
     queue()
         .defer(d3.json, "/data/world-countries.json")
@@ -70,8 +70,8 @@ var globe = function(options) {
             .attr("stop-opacity", "0");
 
         shadow = svg.append("ellipse")
-            .attr("cx", 400)
-            .attr("cy", height / 2 + radius + 10)
+            .attr("cx", 1000)
+            .attr("cy", proj.scale() - 200)
             .attr("rx", proj.scale() * .90)
             .attr("ry", proj.scale() * .25)
             .attr("class", "noclicks")
@@ -105,10 +105,15 @@ var globe = function(options) {
         if (!world.features) return null;
 
         world.features.forEach(function(c) {
-            centroids = proj(d3.geoCentroid(c));
+            centroids[c.id] = d3.geoCentroid(c);
             country_names[c.properties.name] = c;
             id_to_names[c.id] = c.properties.name;
         });
+
+        centroids["ARGH"] = centroids["GAB"];
+        centroids["CCRG"] = centroids["JAM"];
+        centroids["MCSA"] = centroids["IND"];
+        centroids["MCWP"] = centroids["TUV"];
 
         svg.append("g").attr("class", "country")
             .selectAll("country")
@@ -155,6 +160,7 @@ var globe = function(options) {
                     refresh();
                 }))
             .call(d3.zoom()
+                .scaleExtent([0.5, 2.0])
                 .on('zoom', function() {
                     proj.scale(radius * d3.event.transform.k);
                     refresh();
@@ -162,7 +168,7 @@ var globe = function(options) {
 
         countryData.forEach(function(c) {
             var activeCountry = c.Status === "Active";
-            if (c.Country && c.Country.length == 3) {
+            if (c.Country && c.Country.length <= 4) {
                 if (!data_per_country[c.Country]) {
                     data_per_country[c.Country] = {};
                 }
@@ -179,10 +185,24 @@ var globe = function(options) {
                 }
                 data_per_disease[c.Disease][c.Country].push(c);
 
-                d3.select("#" + c.Country)
-                    .classed(c.Disease, true)
-                    .classed(c.Disease + "-inactive", !activeCountry)
-                    .classed(c.Status + "Country", true);
+                if (c["Regional grant"] === "YES") {
+                    id_to_names[c.Country] = c["Country name"];
+                    regional_grants[c.Country].countries.forEach(function(cc, i) {
+                        d3.select("#" + cc)
+                            .classed(c.Disease, true)
+                            .classed(c.Disease + "-inactive", !activeCountry)
+                            .classed(c.Disease + "-active", activeCountry)
+                            .classed(c.Status + "Country", true)
+                            .classed("reg-grant", true)
+                            .classed(c.Country, true);
+                    });
+                } else {
+                    d3.select("#" + c.Country)
+                        .classed(c.Disease, true)
+                        .classed(c.Disease + "-inactive", !activeCountry)
+                        .classed(c.Disease + "-active", activeCountry)
+                        .classed(c.Status + "Country", true);
+                }
             }
         });
 
@@ -196,38 +216,37 @@ var globe = function(options) {
             .selectAll("text").data(world.features)
             .enter().append("text")
             .filter(function(d) {
-                return data_per_country[d.id] != undefined
+                return d.id !== "-99" && ((data_per_country[d.id] != undefined) || (regional_grants["ARGH"].countries.indexOf(d.id)) ||
+                    (regional_grants["CCRG"].countries.indexOf(d.id)) || (regional_grants["MCWP"].countries.indexOf(d.id)))
             })
-            .attr("class", "label shown noclicks")
+            .attr("class", "clabel shown noclicks")
             .text(function(d) { return d.properties.name })
 
         position_labels();
-        //onGlobeDraw();
         refresh();
+        options.globeLoaded();
         spin();
     }
 
     function position_labels() {
         var centerPos = proj.invert([width / 2, height / 2]);
 
-        //var arc = d3.geoDistance();
-
-        svg.selectAll(".label")
+        svg.selectAll(".clabel")
             .attr("text-anchor", function(d) {
-                var x = proj(d3.geoCentroid(d))[0];
+                var x = proj(centroids[d.id])[0]; //d3.geoCentroid(d)
                 return x < width / 20 - 5 ? "end" :
                     x < width / 20 + 5 ? "middle" :
                     "start"
             })
             .attr("transform", function(d) {
-                var loc = proj(d3.geoCentroid(d)),
+                var loc = proj(centroids[d.id]),
                     x = loc[0],
                     y = loc[1];
                 var offset = x < width / 2 ? -5 : 5;
                 return "translate(" + (x + offset) + "," + (y - 2) + ")"
             })
             .style("display", function(d) {
-                var dist = d3.geoDistance(d3.geoCentroid(d), centerPos);
+                var dist = d3.geoDistance(centroids[d.id], centerPos);
                 if (d.id != '-99') {
                     return (dist < 1.57 && d3.select("#" + d.id).classed("ActiveCountry")) ? 'inline' : 'none';
                 }
@@ -248,8 +267,8 @@ var globe = function(options) {
             globeShading.attr("r", proj.scale());
         }
         if (shadow) {
-            shadow.attr("cx", width / 2 - 60).attr("cy", height / 2 + radius * proj.scale() * .0090 - 90)
-                .attr("rx", proj.scale() * .90)
+            shadow.attr("cx", width / 2 - 40).attr("cy", height / 2 + proj.scale())
+                .attr("rx", proj.scale())
                 .attr("ry", proj.scale() * .25)
         }
         position_labels();
@@ -282,13 +301,11 @@ var globe = function(options) {
             scale = scale || proj.scale();
             scale = Math.max(radius, scale);
 
-            // if already at target coordinates, do nothing; resolve.
             if (current[0] == coords[0] && current[1] == coords[1] && current[2] == coords[2] && scale == proj.scale()) {
                 resolve();
                 return;
             }
 
-            // insure that spinning globe is in sync with this transition
             spin_rotation = coords;
             spin_start = Date.now();
 
@@ -311,21 +328,23 @@ var globe = function(options) {
             which = which || 'country';
             zoom = zoom == undefined ? false : zoom;
             var coordsW = [0, 0, 0];
-            var scale = radius;
+            //var scale = radius;
 
-            if (Object.keys(country_names).indexOf(what) >= 0) {
-                coordsW = d3.geoCentroid(country_names[what]).map(function(m) {
-                    return -1 * m;
-                });
-                var b = d3.geoBounds(country_names[what]);
-                var dx = b[1][0] - b[0][0];
-                var dy = b[1][1] - b[0][1];
-                var x = (b[0][0] + b[1][0]) / 2;
-                var y = (b[0][1] + b[1][1]) / 2;
-                bbox = .1 / Math.max(dx / width, dy / height);
-                scale = zoom ? radius * bbox : radius;
-                scale = Math.max(scale, radius);
-                changeFocus(country_names[what].id);
+            if (Object.keys(country_names).indexOf(what) >= 0 || data_per_country[what]) {
+
+                if (which == 'country') {
+                    coordsW = d3.geoCentroid(country_names[what]).map(function(m) {
+                        return -1 * m;
+                    });
+                    changeFocus(country_names[what].id);
+                } else {
+                    coordsW = centroids[what]
+                        .map(function(m) {
+                            return -1 * m;
+                        });
+                    changeFocus(what);
+                }
+
             } else {
                 changeFocus(undefined);
             }
@@ -364,14 +383,26 @@ var globe = function(options) {
         if (focusID && spinning) {
             spin(false);
         }
+        var countryFocused = false;
+
         svg.selectAll("path")
             .classed("focused", function(d, i) {
-                var result = focusID && d && d.id && d.id == focusID ? current_focus = d.id : false;
-                if (result && disease) {
-                    showCountryInfo(focusID, disease);
+                var result = false;
+                if (focusID && focusID.length == 4) {
+                    //is a grant
+                    result = regional_grants[focusID].countries.indexOf(d.id) >= 0;
+                } else {
+                    result = focusID && d && d.id && d.id == focusID ? current_focus = d.id : false;
+                }
+                if (result) {
+                    countryFocused = true;
                 }
                 return result;
             });
+
+        if (countryFocused) {
+            showCountryInfo(focusID);
+        }
 
     }
 
@@ -404,19 +435,31 @@ var globe = function(options) {
                 if (!tour_countries.length || !touring) {
                     return resolve();
                 }
-                country = id_to_names[tour_countries.pop()];
+                var country;
+                var country_id = tour_countries.pop();
+                var which;
+
+                if (country_id.length == 4) {
+                    //is grant
+                    which = "grant";
+                    country = country_id
+                } else {
+                    country = id_to_names[country_id];
+                }
+
 
                 if (!country) {
                     nextCountry();
                 } else {
                     //console.log(country);
                     if (bounce) {
-                        bounce2(country)
-                            .then(delayNext, reject);
-                    } else {
-                        zoom2(country, undefined, false)
+                        bounce2(country, which)
                             .then(delayNext, reject);
                     }
+                    /* else {
+                                            zoom2(country, undefined, false)
+                                                .then(delayNext, reject);
+                                        }*/
                 }
             }
 
@@ -436,9 +479,9 @@ var globe = function(options) {
         bounce2: bounce2,
         spin: spin,
         rotate2: rotate2,
-        /*disease: disease,*/
         coords: coords,
-        current_focus: current_focus
+        current_focus: current_focus,
+        centroids: centroids
     }
 
 };

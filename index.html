@@ -7,6 +7,7 @@
     <meta charset="utf-8">
     <title>geoFlow</title>
     <link rel="stylesheet" href="css/style.css">
+    <script src="//code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
 </head>
 
 
@@ -69,11 +70,16 @@
                 </div>
             </div>
             <div class="svg-wrapper">
-                <div class="country-data n">
-                    <h3><span class="country-name"></span> - <span class="country-status"></span></h3>
-
+                <div class="legend">
+                    <div class="legend-item active-grant"><span></span>Active Grant</div>
+                    <div class="legend-item inactive-grant"><span></span>Inactive Grant</div>
                 </div>
+                <h3 class="country-name-svg n"></h3>
             </div>
+        </div>
+        <div class="country-data n">
+            <h3><span class="country-name"></h3>
+            </span> - <span class="country-status"></span>
         </div>
         <div class="sankey-diag" style="margin-top: 100px;">
             <svg id="svgSankey" width="1024" height="1000"></svg>
@@ -83,12 +89,30 @@
     <script src="//d3js.org/d3.v4.min.js"></script>
     <script src="//d3js.org/d3-selection-multi.v1.min.js"></script>
     <script src="//d3js.org/queue.v1.min.js"></script>
-    <script src="js/globe.js"></script>
-    <script src="//unpkg.com/d3-sankey@0.7.1/build/d3-sankey.min.js"></script>
-    <script src="js/countries-sankey.js"></script>
+    <script src="/js/globe.js"></script>
+    <!--script src="//unpkg.com/d3-sankey@0.7.1/build/d3-sankey.min.js"></script>
+    <script src="js/countries-sankey.js"></script-->
     <script>
         window.Promise || document.write('<script src="//unpkg.com/es6-promise@3.2.1/dist/es6-promise.min.js"><\/script>');
 
+        var regional_grants = {
+            "ARGH": {
+                "countries": ["BWA", "CIV", "KEN", "MWI", "NGA", "SEN", "SYC", "TZA", "UGA", "ZMB"],
+                "centroid": {}
+            },
+            "CCRG": {
+                "countries": ["BLZ", "CUB", "DOM", "GUY", "HTI", "JAM", "SUR", "TTO"],
+                "centroid": {}
+            },
+            "MCSA": {
+                "countries": ["AFG", "BGD", "BTN", "IND", "NPL", "PAK", "LKA"],
+                "centroid": {}
+            },
+            "MCWP": {
+                "countries": ["COK", "KIR", "MHL", "FSM", "NRU", "NIU", "PLW", "WSM", "TON", "TUV", "VUT"],
+                "centroid": {}
+            }
+        }
         var country_names = {};
         var id_to_names = {};
         var data_per_country = {};
@@ -97,6 +121,8 @@
         var touring = false;
         var spinning = false;
         var disease = undefined;
+
+        var numberFormat = d3.format(",");
 
         var globeOptions = {
             width: 775,
@@ -108,7 +134,8 @@
                 landMouseMove: landMouseMove,
                 landMouseClick: landMouseClick
 
-            }
+            },
+            globeLoaded: GlobeLoaded
 
         };
 
@@ -128,6 +155,7 @@
             d3.select(".country-name").html("");
             d3.select(".country-status").html("");
             d3.selectAll(".indicator").html("").remove();
+            updateLegend();
         }
 
         d3.select("#hiv").on("change", function() {
@@ -217,85 +245,89 @@
 
             var new_focus = globe.current_focus == d.id ? undefined : d.id;
 
-            if (data_per_country[new_focus] && disease && data_per_disease[disease][new_focus]) {
+            /*if (disease != undefined && !data_per_disease[disease][new_focus] || (disease != undefined && countryInGrant(new_focus) && !data_per_disease[disease][countryInGrant(new_focus)])) {
+                return;
+            }*/
+
+            if (new_focus && !data_per_country[new_focus] && countryInGrant(new_focus)) {
                 globe.tour(false);
                 globe.spin(false);
-                coordsWcurrent_focus = new_focus;
-                //globe.changeFocus(current_focus)
+                globe.bounce2(countryInGrant(new_focus), "grant");
+            }
+
+            if (data_per_country[new_focus] /* && disease && data_per_disease[disease][new_focus]*/ ) {
+                globe.tour(false);
+                globe.spin(false);
                 globe.bounce2(d.properties.name);
             }
         }
 
-
-
-        var numberFormat = d3.format(",");
-
         function hideCountryInfo() {
             d3.select(".country-data").classed("shown", false);
-            d3.selectAll(".label").classed("shown", true);
+            d3.select(".country-name-svg").classed("shown", false);
+            d3.selectAll(".clabel").classed("shown", true);
         }
 
-        function showCountryInfo(country_id, disease) {
-            if (country_id && disease) {
-                var country = id_to_names[country_id];
-
-                renderCountry(country, disease, data_per_disease[disease][country_id])
+        function showCountryInfo(country_id) {
+            if (!country_id) {
+                return;
             }
 
+            d3.select(".country-name-svg").classed("shown", true);
+
             d3.select(".country-data").classed("shown", true);
-            d3.selectAll(".label").classed("shown", false);
+            d3.selectAll(".clabel").classed("shown", false);
 
-            function renderCountry(country, disease, data) {
-                console.log(country + " - ( " + disease + " )");
-                d3.select(".country-name").html("");
-                d3.select(".country-name").html(country);
-                var seen_indicators = [];
-                if (data) {
-                    var grantStatus = data[0].Status; // == "1" ? "Active" : "Inactive";
-                    d3.select(".country-status").classed("cs-Active", false);
-                    d3.select(".country-status").classed("cs-Inactive", false);
-                    d3.select(".country-status").text(grantStatus + " grant").classed("cs-" + grantStatus, true);
-                    data.forEach(function(d) {
-                        if (seen_indicators[d.Indicator]) {
-                            if (seen_indicators[d.Indicator].year < d.Year) {
-                                seen_indicators[d.Indicator] = {
-                                    "name": d.Indicator,
-                                    "value": d.Value,
-                                    "year": d.Year
-                                };
-                            }
-                        } else {
-                            seen_indicators[d.Indicator] = {
-                                "name": d.Indicator,
-                                "value": d.Value,
-                                "year": d.Year
-                            };
-                        }
-
-                    });
-                    var lines = [];
-                    var countryDataTxt = d3.select(".country-data");
-                    var sel = countryDataTxt.selectAll("div").data(lines);
-                    sel.exit().remove();
-
-                    Object.keys(seen_indicators).forEach(function(ind) {
-                        console.log(indicators[seen_indicators[ind].name] + ":" + seen_indicators[ind].value + " (" + seen_indicators[ind].year + ")");
-                        //lines.push(indicators[seen_indicators[ind].name] + ": <b>" + numberFormat(seen_indicators[ind].value) + "</b>");
-                        lines.push(seen_indicators[ind].name + ": <b>" + numberFormat(seen_indicators[ind].value) + "</b>");
-                    });
-                    if (data[0].Link) {
-                        lines.push("<a target='_blank' class='globalfootercard globalfootercard--green--inv' href='" + data[0].Link + "'>Visit Country Results Page</a>");
-                    }
-
-                    sel = countryDataTxt.selectAll("div").data(lines);
-
-                    sel.enter().append("div").classed("indicator", true).html(function(d) {
-                        return d
-                    });
+            var isGrant = country_id.length == 4;
+            var country = id_to_names[country_id];
+            var data = data_per_country[country_id];
 
 
-                }
+            //console.log(country + " - ( " + disease + " )");
 
+            //d3.select(".country-name").html("");
+            d3.select(".country-name-svg").html(country);
+            d3.select(".country-name").html(country);
+
+            //lines.push("<a target='_blank' class='globalfootercard globalfootercard--green--inv' href='" + data[0].Link + "'>Visit Country Results Page</a>");
+        }
+
+        function countryInGrant(country_id) {
+            if (regional_grants["ARGH"].countries.indexOf(country_id) >= 0) {
+                return "ARGH";
+            }
+            if (regional_grants["CCRG"].countries.indexOf(country_id) >= 0) {
+                return "CCRG";
+            }
+            if (regional_grants["MCWP"].countries.indexOf(country_id) >= 0) {
+                return "MCWP";
+            }
+            if (regional_grants["MCSA"].countries.indexOf(country_id) >= 0) {
+                return "MCSA";
+            }
+        }
+
+        function updateLegend() {
+            $(".off-legend").removeClass("off-legend");
+            $(".country-off").removeClass("country-off");
+
+            if (disease == "HIV") {
+                $(".active-grant span").css("background-color", "#E31A1C");
+                $(".inactive-grant span").css("background-color", "#FB9A99");
+                return;
+            }
+            if (disease == "MA") {
+                $(".active-grant span").css("background-color", "#1F78B4");
+                $(".inactive-grant span").css("background-color", "#A6CEE3");
+                return;
+            }
+            if (disease == "TB") {
+                $(".active-grant span").css("background-color", "#33A02C");
+                $(".inactive-grant span").css("background-color", "#B2DF8A");
+                return;
+            } else {
+                $(".active-grant span").css("background-color", "#FF7F00");
+                $(".inactive-grant span").css("background-color", "#FDBF6F");
             }
         }
 
@@ -314,32 +346,33 @@
             });
         }
 
-        function arrayRotate(arr, reverse) {
-            if (reverse)
-                arr.unshift(arr.pop())
-            else
-                arr.push(arr.shift())
-            return arr
+        function GlobeLoaded() {
+            var x = $(".ActiveCountry.InactiveCountry").removeClass("InactiveCountry");
+            updateLegend();
+            $(".legend-item").click(function() {
+                var act = $(this).hasClass("active-grant");
+                $(this).toggleClass("off-legend");
+                if (disease) {
+                    act ? $("." + disease + "-active").toggleClass("country-off") : $("." + disease + "-inactive").toggleClass("country-off");
+                } else {
+                    act ? $(".ActiveCountry").toggleClass("country-off") : $(".InactiveCountry").toggleClass("country-off");
+                }
+
+            });
         }
 
-        var indicators = {
-            "HAI": "Associated infections: People receiving treatment for TB/HIV",
-            "HCO": "Community outreach prevention services (behavior change communications)",
-            "HSTI": "Associated infections: People receiving treatment for STIs",
-            "HCS": "Basic care and support services provided to orphans and vulnerable children",
-            "HCD": "Condoms distributed",
-            "HCTE": "Counselling and testing encounters",
-            "HART": "People currently on ART",
-            "HARV": "Seropositive pregnant women receiving ARV prophylaxis for PMTCT",
-            "MCT": "Cases treated",
-            "MND": "Nets distributed (ITNs & LLINs)",
-            "MRS": "Structures covered by indoor residual spraying",
-            "TPT": "MDR-TB - people treated",
-            "CCCS": "People receiving care & support",
-            "CCT": "'Person episodes' of training for health or community workers",
-            "TBCT": "Cases successfully treated",
-            "TBSP": "New smear-positive cases detected and treated"
-        };
+
+        function pairedColors() {
+            return colors("a6cee31f78b4b2df8a33a02cfb9a99e31a1cfdbf6fff7f00cab2d66a3d9affff99b15928");
+        }
+
+        function colors(specifier) {
+            var n = specifier.length / 6 | 0,
+                colors = new Array(n),
+                i = 0;
+            while (i < n) colors[i] = "#" + specifier.slice(i * 6, ++i * 6);
+            return colors;
+        }
     </script>
 
 </body>

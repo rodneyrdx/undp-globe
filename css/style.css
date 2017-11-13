@@ -16,6 +16,10 @@ body {
     position: relative;
 }
 
+svg {
+    overflow: hidden;
+}
+
 #world {
     display: flex;
 }
@@ -34,13 +38,14 @@ body {
 
 .labels {
     font: 12px sans-serif;
-    fill: rgb(235, 229, 229);
-    text-shadow: -2px 1px 2px rgb(63, 61, 61);
+    fill: /*rgb(245, 241, 16);*/
+    yellow;
+    text-shadow: 1px 1px 1px rgb(63, 61, 61);
     opacity: 0.7;
     /*display: none;*/
 }
 
-.label {
+.clabel {
     opacity: 0;
 }
 
@@ -61,7 +66,7 @@ body {
     stroke: rgba(80, 64, 39, 0.6);
     stroke-width: 1;
     opacity: 1;
-    fill: rgba(117, 87, 57, 0.6)
+    fill: rgba(117, 87, 57, 0.6);
 }
 
 hr {
@@ -72,39 +77,43 @@ hr {
 }
 
 .world-wrapper .InactiveCountry {
-    fill: rgba(236, 205, 102, 0.5);
+    fill: #FDBF6F;
 }
 
 .world-wrapper .ActiveCountry {
-    fill: rgb(243, 191, 4);
+    fill: #FF7F00;
+}
+
+.world-wrapper .InactiveCountry-off {
+    fill: rgba(117, 87, 57, 0.6);
+}
+
+.world-wrapper .ActiveCountry-off {
+    fill: rgba(117, 87, 57, 0.6);
 }
 
 .hiv-world .HIV {
-    fill: rgba(236, 26, 26, 0.7);
-}
-
-.hiv-world-active .HIV {
-    fill: rgba(236, 26, 26, 0.7);
+    fill: #E31A1C;
 }
 
 .hiv-world .HIV-inactive {
-    fill: rgba(221, 96, 96, 0.7);
+    fill: #FB9A99;
 }
 
 .ma-world .MA {
-    fill: rgba(26, 40, 236, 0.7);
+    fill: #1F78B4;
 }
 
 .ma-world .MA-inactive {
-    fill: rgba(84, 94, 235, 0.7);
+    fill: #A6CEE3;
 }
 
 .tb-world .TB {
-    fill: rgba(72, 238, 6, 0.7);
+    fill: #33A02C;
 }
 
 .tb-world .TB-inactive {
-    fill: rgba(148, 233, 114, 0.7);
+    fill: #B2DF8A;
 }
 
 .landTooltip {
@@ -150,6 +159,24 @@ hr {
     background-color: rgba(0, 0, 0, .25);
 }
 
+.country-name-svg {
+    box-sizing: border-box;
+    font-size: 12pt;
+    width: 80%;
+    top: 48%;
+    position: absolute;
+    line-height: 1.2;
+    padding: 0px;
+    color: yellow;
+    display: block;
+    left: 10%;
+    text-align: center;
+    opacity: 0;
+    transition: all ease 1.8s;
+    z-index: -3;
+    text-shadow: 1px 1px 1px rgb(63, 61, 61);
+}
+
 .country-data {
     box-sizing: border-box;
     font-size: 12pt;
@@ -171,9 +198,10 @@ hr {
 
 /* Creates a small triangle extender for the tooltip */
 
-.country-data:after {
+
+/*.country-data:after {
     box-sizing: border-box;
-    /*display: inline;*/
+    //display: inline;
     font-size: 14px;
     width: 100%;
     line-height: 1;
@@ -181,16 +209,17 @@ hr {
     content: "\25b2";
     position: absolute;
     text-align: center;
-}
+}*/
 
 
 /* style northward tooltips differently */
 
-.country-data.n:after {
+
+/*.country-data.n:after {
     margin: -10px 0 0 0;
     top: 0%;
     left: 0;
-}
+}*/
 
 .cs-Active {
     color: green;
@@ -220,54 +249,54 @@ input[type="radio"] {
     display: none;
 }
 
+.selectors-container label {
+    cursor: pointer;
+}
+
 #hiv+label {
-    color: rgb(236, 26, 26);
+    color: #E31A1C;
 }
 
 #hiv+label span {
-    border: 1px solid rgb(236, 26, 26);
+    border: 1px solid #E31A1C;
 }
 
 #hiv:checked+label span {
-    background-color: rgb(236, 26, 26);
+    background-color: #E31A1C;
     box-shadow: inset 0 0 0 2px #fff;
 }
 
 #ma+label {
-    color: rgb(26, 40, 236);
+    color: #1F78B4;
 }
 
 #ma+label span {
-    border: 1px solid rgb(26, 40, 236);
+    border: 1px solid #1F78B4;
 }
 
 #ma:checked+label span {
-    background-color: rgb(26, 40, 236);
+    background-color: #1F78B4;
     box-shadow: inset 0 0 0 2px #fff;
 }
 
 #tb+label {
-    color: rgb(72, 238, 6);
+    color: #33A02C;
 }
 
 #tb+label span {
-    border: 1px solid rgb(72, 238, 6);
+    border: 1px solid #33A02C;
 }
 
 #tb:checked+label span {
-    background-color: rgb(72, 238, 6);
+    background-color: #33A02C;
     box-shadow: inset 0 0 0 2px #fff;
 }
 
+.country-off {
+    fill: black !important;
+}
+
 input[type="radio"]+label span {
-    /*display: inline-block;
-    width: 19px;
-    height: 19px;
-    margin: -1px 4px 0px 10px;
-    vertical-align: middle;
-    cursor: pointer;
-    -moz-border-radius: 50%;
-    border-radius: 50%;*/
     border-radius: 100%;
     display: inline-block;
     width: .875rem;
@@ -294,7 +323,9 @@ input[type="radio"]:checked+label span {
 /*********************************/
 
 .focused {
-    /*fill: rgb(211, 30, 202) !important;*/
+    fill: rgb(211, 30, 202) !important;
+    stroke: white !important;
+    stroke-width: .5;
     opacity: 1;
 }
 
@@ -386,4 +417,26 @@ a.globalfootercard--green--inv:active {
 .title,
 .subtitle {
     text-align: center;
+}
+
+.legend {
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+}
+
+.legend div {
+    cursor: pointer;
+}
+
+.legend div span {
+    display: inline-block;
+    border: 1px solid rgba(80, 64, 39, 0.6);
+    width: 10px;
+    height: 10px;
+    margin-right: 5px;
+}
+
+.legend .off-legend {
+    opacity: 0.2;
 }
