@@ -450,6 +450,7 @@
             $(".ActiveCountry.InactiveCountry").removeClass("InactiveCountry");
             updateLegend();
             $(".InactiveCountry").toggleClass("country-off");
+            $(".legend-item.inactive-grant").addClass("off-legend");
             $(".legend-item").click(function() {
                 var act = $(this).hasClass("active-grant");
                 $(this).toggleClass("off-legend");
