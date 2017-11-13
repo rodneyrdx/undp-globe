@@ -209,7 +209,7 @@
         }
 
         d3.select("#hiv").on("change", function() {
-            d3.select('.subtitle').text('Countries where we work on HIV');
+            d3.select('.subtitle').text('Countries where we work on HIV (as of November 2017)');
             d3.select("#world").classed("hiv-world", !d3.select("#world").classed("hiv-world"));
             d3.select("#world").classed("ma-world", false);
             d3.select("#world").classed("tb-world", false);
@@ -226,7 +226,7 @@
         });
 
         d3.select("#ma").on("change", function() {
-            d3.select('.subtitle').text('Countries where we work on Malaria');
+            d3.select('.subtitle').text('Countries where we work on Malaria (as of November 2017)');
             d3.select("#world").classed("ma-world", !d3.select("#world").classed("ma-world"));
             d3.select("#world").classed("hiv-world", false);
             d3.select("#world").classed("tb-world", false);
@@ -243,7 +243,7 @@
         });
 
         d3.select("#tb").on("change", function() {
-            d3.select('.subtitle').text('Countries where we work on Tuberculosis');
+            d3.select('.subtitle').text('Countries where we work on Tuberculosis (as of November 2017)');
             d3.select("#world").classed("tb-world", !d3.select("#world").classed("tb-world"));
             d3.select("#world").classed("ma-world", false);
             d3.select("#world").classed("hiv-world", false);
@@ -359,7 +359,13 @@
                     lines.push("<div class='indicator'><span class='ind-name'>" + ind.Indicator + ": </span><span class='ind-value'>" + ind.Value + "</span></div>");
                     lines.push("</td>")
                     if(ind.Link){
-                        link = "<div style='margin:auto;width:20%;'><a target='_blank' class='globalfootercard globalfootercard--green' href='" + ind.Link + "'>Visit Country Results Page</a></div>";
+                        if(isGrant)
+                        {
+                            link = "<div style='margin:auto;width:20%;'><a target='_blank' class='globalfootercard globalfootercard--green' href='" + ind.Link + "'>Visit Regional Results Page</a></div>";
+                        }
+                        else{
+                            link = "<div style='margin:auto;width:20%;'><a target='_blank' class='globalfootercard globalfootercard--green' href='" + ind.Link + "'>Visit Country Results Page</a></div>";
+                        }
                     }
                 });
             })
@@ -443,6 +449,7 @@
         function GlobeLoaded() {
             $(".ActiveCountry.InactiveCountry").removeClass("InactiveCountry");
             updateLegend();
+            $(".InactiveCountry").toggleClass("country-off");
             $(".legend-item").click(function() {
                 var act = $(this).hasClass("active-grant");
                 $(this).toggleClass("off-legend");
