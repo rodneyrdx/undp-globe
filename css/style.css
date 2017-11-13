@@ -435,6 +435,8 @@ a.globalfootercard--green:active {
     text-align: center;
     width: 90%;
     margin: auto;
+    margin-top: 10px;
+    margin-bottom: 20px; 
 }
 
 .legend {
