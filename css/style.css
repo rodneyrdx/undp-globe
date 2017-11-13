@@ -340,7 +340,7 @@ input[type="radio"]:checked+label span {
 
 .dis-result {
     display: none;
-    height: 65%;
+    height: 100%;
 }
 
 .indicator {
@@ -433,6 +433,8 @@ a.globalfootercard--green:active {
 .title,
 .subtitle {
     text-align: center;
+    width: 90%;
+    margin: auto;
 }
 
 .legend {
@@ -459,4 +461,76 @@ a.globalfootercard--green:active {
 
 .highlight_column span, .highlight_column div{
     font-weight: bold;
+}
+
+.rad,
+.line,
+.box {
+  -webkit-transition: all 0.25s ease-in-out;
+  -moz-transition: all 0.25s ease-in-out;
+  transition: all 0.25s ease-in-out;
+}
+
+.rad {
+  /*margin: 0 auto;*/
+  display: block;
+  position: absolute;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  top: 20px;
+  text-align: center;
+  padding: 1px;
+  background-color: rgba(250, 250, 250, 0.1);
+  border: 3px solid rgba(100, 200, 250, 0.5);
+  border-radius: 100%;
+  cursor: pointer;
+  box-sizing: border-box;
+  color: rgb(100, 200, 250);
+}
+
+.rad:hover {
+  top: 20px;
+  border: 4px solid rgba(100, 200, 250, 0.5);
+}
+
+.line {
+  /*margin: 0 auto;*/
+  display: block;
+  position: absolute;
+  width: 1px;
+  height: 0px;
+  right: 25px;
+  top: 48px;
+  opacity: 0.2;
+  background-color: rgba(100, 200, 250, 0.5);
+}
+.line.open {
+  height: 80px;
+  opacity: 1;
+}
+
+.box {
+  /*margin: 0 auto;*/
+  display: block;
+  position: absolute;
+  width: 401px;
+  height: 0px;
+  top: 120px;
+  right: 25px;
+  opacity: 0;
+  background-color: #fafafa;
+  /* text-align: right; */
+  line-height: 30px;
+  color: rgb(100, 200, 250);
+  overflow: hidden;
+  border: 1px solid rgba(100, 200, 250, 0.5);
+  box-sizing: border-box;
+  z-index: 100;
+  padding: 10px 20px;
+}
+.box.open {
+  height: 252px;
+  right: 25px;
+  opacity: 1;
 }

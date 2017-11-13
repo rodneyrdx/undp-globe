@@ -18,6 +18,17 @@
         </div>
         <h2 class="subtitle">Countries where UNDP manages Global Fund grants in partnership with national governments and civil society</h2>
         <div id="world" class="world-wrapper">
+                    <div id="info-box">
+                        <div class="rad">?</div>
+                        <div class="line"></div>
+                        <div class="box">
+                            <h4>How to use the globe:</h4>
+                            <div>[click the ocean to spin the globe]</div>
+                            <div>[click a highlighted country to see its results]</div>
+                            <div>[drag to stop spinning]</div>
+                            <div>[click on the legend to toggle visible countries]</div>
+                        </div>
+                    </div>
             <div class="controls-container">
                 <div class="selectors-container">
                     <div class="dis-selector">
@@ -60,17 +71,17 @@
                     </ul>
                     <a class="globalfootercard globalfootercard--blue" onclick="javascript:startTour('TB')" href="#">View TB Country Results</a>
                 </div>
-                <div class="how-to">
+                <!--div class="how-to">
                     <hr class="divider">
                     <h4>How to use the globe:</h4>
-                    <!--div>[scroll/double-click to zoom]</div-->
                     <div>[click the ocean to spin the globe]</div>
                     <div>[click a highlighted country to see its results]</div>
                     <div>[drag to stop spinning]</div>
                     <div>[click on the legend to toggle visible countries]</div>
-                </div>
+                </div-->
             </div>
             <div class="svg-wrapper">
+                                         
                 <div class="legend">
                     <div class="legend-item active-grant"><span></span>Active Grant</div>
                     <div class="legend-item inactive-grant"><span></span>Inactive Grant</div>
@@ -94,6 +105,9 @@
     <script>
         window.Promise || document.write('<script src="//unpkg.com/es6-promise@3.2.1/dist/es6-promise.min.js"><\/script>');
 
+            $('.rad').on('mouseenter mouseleave', function () {
+  $('.box, .line').toggleClass('open');
+});
         var regional_grants = {
             "ARGH": {
                 "countries": ["BWA", "CIV", "KEN", "MWI", "NGA", "SEN", "SYC", "TZA", "UGA", "ZMB"],
