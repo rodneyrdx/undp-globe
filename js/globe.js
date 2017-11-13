@@ -92,6 +92,9 @@ var globe = function(options) {
                 //preventDefault();
 
                 changeFocus(undefined);
+                if(touring){
+                    tour(false);
+                }
                 if (!touring && !spinning) {
                     rotate2().then(function() {
                         spin();
