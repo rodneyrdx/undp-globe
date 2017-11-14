@@ -373,11 +373,6 @@ input[type="radio"]:checked+label span {
 
 }
     
-.indicator {
-    /*border-bottom: 1px dotted #ccc;*/
-    /*padding: 10px 0px;*/
-}
-
 
 /*buttons*/
 
@@ -473,6 +468,8 @@ a.globalfootercard--green:active {
     position: absolute;
     right: 0px;
     top: 0px;
+    background-color: rgba(255,255,255,0.5);
+    padding: 10px 10px;
 }
 
 .legend div {
