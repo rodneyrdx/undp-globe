@@ -134,9 +134,6 @@ hr {
 
 .controls-container {
     width: 355px;
-}
-
-.controls-container {
     background: hsla(0, 0%, 100%, .7);
     border-radius: 2px;
     -webkit-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .12);
@@ -144,7 +141,10 @@ hr {
     margin: 1.5rem 0 0 1rem;
     padding: .5rem 1rem;
     z-index: 2;
+    display: flex;
+    flex-direction: column;
 }
+
 
 .selectors-container {
     display: flex;
@@ -546,3 +546,131 @@ a.globalfootercard--green:active {
   right: 25px;
   opacity: 1;
 }
+
+/**************** scroll down *************/
+
+.scroll{
+    display: none;
+}
+.scroll a {
+    position: absolute;
+    bottom: 20px;
+    left: 37%;
+    z-index: 2;
+    display: inline-block;
+    /*-webkit-transform: translate(0, -50%);
+    transform: translate(0, -50%);*/
+    color: #fff;
+    font : normal 400 20px/1 'Josefin Sans', sans-serif;
+    letter-spacing: .1em;
+    text-decoration: none;
+    transition: opacity .3s;
+    padding-top: 60px;
+}
+  .scroll a:hover {
+    opacity: .5;
+  }
+
+.scroll a span {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 46px;
+  height: 46px;
+  margin-left: -23px;
+  border: 1px solid #fff;
+  border-radius: 100%;
+  box-sizing: border-box;
+}
+.scroll a span::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  content: '';
+  width: 16px;
+  height: 16px;
+  margin: -12px 0 0 -8px;
+  border-left: 1px solid #fff;
+  border-bottom: 1px solid #fff;
+  -webkit-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+  box-sizing: border-box;
+}
+.scroll a span::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  content: '';
+  width: 44px;
+  height: 44px;
+  box-shadow: 0 0 0 0 rgba(255,255,255,.3);
+  border-radius: 100%;
+  opacity: 0;
+  -webkit-animation: sdb03 3s infinite;
+  animation: sdb03 3s infinite;
+  box-sizing: border-box;
+}
+@-webkit-keyframes sdb03 {
+  0% {
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  60% {
+    box-shadow: 0 0 0 60px rgba(255,255,255,.3);
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes sdb03 {
+  0% {
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  60% {
+    box-shadow: 0 0 0 60px rgba(255,255,255,.3);
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+/****************** plain button *********************/
+
+
+.plain-button {
+    overflow: hidden;
+    /*width:7rem;*/
+    color: #5585ff;
+    border: 2px solid #5585ff;
+    background-color: transparent;
+    cursor: pointer;
+    line-height: 2;
+    margin: auto;
+    padding: 0px 20px;
+    border-radius: 1.5rem;
+    outline: none;
+    transition: transform .125s;
+  }
+  .plain-button:active {
+    transform: scale(0.9, 0.9);
+  }
+  /*.plain-button:before, button:after {
+    opacity: 0;
+    border-radius: 50%;
+    background-color: #fff;
+    top: 50%;
+    left: 50%;
+    margin-top: -1.125rem;
+    margin-left: -1.125rem;
+    width: 2.25rem;
+    height: 2.25rem;
+    content: '';
+    z-index: 1;
+  }*/

@@ -50,6 +50,7 @@
                     </div>
                 </div>
                 <hr class="divider">
+                <div style="flex-grow: 1;">
                 <div class="dis-result hiv-results">
                     <ul>
                         <li>
@@ -107,14 +108,12 @@
                     </ul>
                     <a class="globalfootercard globalfootercard--blue" onclick="javascript:startTour('TB')" href="#">View TB Country Results</a>
                 </div>
-                <!--div class="how-to">
+                </div>
+                <div style="text-align:center;">
                     <hr class="divider">
-                    <h4>How to use the globe:</h4>
-                    <div>[click the ocean to spin the globe]</div>
-                    <div>[click a highlighted country to see its results]</div>
-                    <div>[drag to stop spinning]</div>
-                    <div>[click on the legend to toggle visible countries]</div>
-                </div-->
+                    <button class="plain-button" id="reset">Reset Globe</button>
+                </div>
+                
             </div>
             <div class="svg-wrapper">
                                          
@@ -123,9 +122,10 @@
                     <div class="legend-item inactive-grant"><span></span>Inactive Grant</div>
                 </div>
                 <h3 class="country-name-svg n"></h3>
+                <div class="scroll"><a href="#countryData"><span></span>Scroll to see results</a></div>
             </div>
         </div>
-        <div class="country-data n">
+        <div class="country-data n" id="countryData">
         </div>
         <div class="sankey-diag" style="margin-top: 100px;">
             <svg id="svgSankey" width="1024" height="1000"></svg>
@@ -191,20 +191,29 @@
         var globe = globe(globeOptions);
 
         function changeDisease(dis) {
-            d3.select('#world').classed('world-wrapper', false);
             hideCountryInfo();
             globe.changeFocus(undefined);
-            disease = dis;
+
             if (touring) {
                 globe.tour(false);
             }
             if (!spinning) {
                 globe.spin();
             }
-            d3.select(".country-name").html("");
-            d3.select(".country-status").html("");
-            d3.selectAll(".indicator").html("").remove();
-            $(".select-dis").css("display", "none");
+
+            if(dis){
+                d3.select('#world').classed('world-wrapper', false);
+                disease = dis;
+                d3.select(".country-name").html("");
+                d3.select(".country-status").html("");
+                d3.selectAll(".indicator").html("").remove();
+                $(".select-dis").css("display", "none");
+            }
+            else{
+                d3.select('#world').classed('world-wrapper', true);
+                $(".select-dis").css("display", "block");
+            }
+            
             updateLegend();
         }
 
@@ -257,6 +266,26 @@
                 "display": "block"
             });
             changeDisease("TB");
+        });
+
+        $("#reset").on("click", function() {
+            disease = undefined;
+            d3.select('.subtitle').html("&nbsp;");
+            d3.select("#world").classed("tb-world", false);
+            d3.select("#world").classed("ma-world", false);
+            d3.select("#world").classed("hiv-world", false);
+            d3.select(".hiv-results").styles({
+                "display": "none"
+            });
+            d3.select(".ma-results").styles({
+                "display": "none"
+            });
+            d3.select(".tb-results").styles({
+                "display": "none"
+            });
+            $('.dis-selector input[type="radio"]').attr('checked', false);
+            
+            changeDisease(false);
         });
 
 
@@ -316,12 +345,14 @@
             d3.select(".country-data").classed("shown", false);
             d3.select(".country-name-svg").classed("shown", false);
             d3.selectAll(".clabel").classed("shown", true);
+            $(".scroll").hide();
         }
 
         function showCountryInfo(country_id) {
             if (!country_id) {
                 return;
             }
+            $(".scroll").show();
             $(".country-data").empty();
 
             d3.select(".country-name-svg").classed("shown", true);
@@ -428,6 +459,8 @@
             } else {
                 $(".active-grant span").css("background-color", "#FF7F00");
                 $(".inactive-grant span").css("background-color", "#FDBF6F");
+                $(".legend-item.inactive-grant").addClass("off-legend");
+                $(".InactiveCountry").addClass("country-off");
             }
         }
 
@@ -449,7 +482,7 @@
         function GlobeLoaded() {
             $(".ActiveCountry.InactiveCountry").removeClass("InactiveCountry");
             updateLegend();
-            $(".InactiveCountry").toggleClass("country-off");
+            //$(".InactiveCountry").toggleClass("country-off");
             $(".legend-item.inactive-grant").addClass("off-legend");
             $(".legend-item").click(function() {
                 var act = $(this).hasClass("active-grant");
