@@ -77,11 +77,17 @@ hr {
 }
 
 .world-wrapper .InactiveCountry {
-    fill: #FDBF6F;
+    /*fill: #FDBF6F;*/
+    fill: #cbc9e2;
 }
 
 .world-wrapper .ActiveCountry {
-    fill: #FF7F00;
+    /*fill: #FF7F00;*/
+    fill: #6a51a3;
+}
+
+.world-wrapper .reg-grant-active{
+    fill: #9e9ac8;
 }
 
 .world-wrapper .InactiveCountry-off {
@@ -92,28 +98,42 @@ hr {
     fill: rgba(117, 87, 57, 0.6);
 }
 
-.hiv-world .HIV {
-    fill: #E31A1C;
+.hiv-world .reg-grant-HIV-inactive {
+    fill: #fee5d9;
 }
 
 .hiv-world .HIV-inactive {
-    fill: #FB9A99;
+    fill: #fee5d9;
 }
 
-.ma-world .MA {
-    fill: #1F78B4;
+.hiv-world .HIV-active {
+    fill: #cb181d;
+}
+.hiv-world .reg-grant-HIV-active {
+    fill: #fb6a4a;
 }
 
 .ma-world .MA-inactive {
-    fill: #A6CEE3;
+    fill: #bdd7e7;
 }
 
-.tb-world .TB {
-    fill: #33A02C;
+.ma-world .MA-active {
+    fill: #2171b5;
+}
+.ma-world .reg-grant-MA-active {
+    fill: #6baed6;
 }
 
 .tb-world .TB-inactive {
-    fill: #B2DF8A;
+    fill: #bae4b3;
+}
+
+.tb-world .TB-active {
+    fill: #238b45;
+}
+
+.tb-world .reg-grant-TB-active {
+    fill: #74c476;
 }
 
 .landTooltip {
@@ -138,7 +158,7 @@ hr {
     border-radius: 2px;
     -webkit-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .12);
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .12);
-    margin: 1.5rem 0 0 1rem;
+    /*margin: 1.5rem 0 0 1rem;*/
     padding: .5rem 1rem;
     z-index: 2;
     display: flex;

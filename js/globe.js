@@ -193,18 +193,23 @@ var globe = function(options) {
                     regional_grants[c.Country].countries.forEach(function(cc, i) {
                         d3.select("#" + cc)
                             .classed(c.Disease, true)
-                            .classed(c.Disease + "-inactive", !activeCountry)
-                            .classed(c.Disease + "-active", activeCountry)
+                            //.classed(c.Disease + "-inactive", !activeCountry)
+                            //.classed(c.Disease + "-active", activeCountry)
                             .classed(c.Status + "Country", true)
                             .classed("reg-grant", true)
+                            .classed("reg-grant-active", activeCountry)
+                            .classed("reg-grant-" + c.Disease + "-inactive", !activeCountry)
+                            .classed("reg-grant-" + c.Disease + "-active", activeCountry)
                             .classed(c.Country, true);
+                        activeCountry ? d3.select("#" + cc).classed(c.Disease + "-active", true) : d3.select("#" + cc).classed(c.Disease + "-inactive", true);
                     });
                 } else {
                     d3.select("#" + c.Country)
                         .classed(c.Disease, true)
-                        .classed(c.Disease + "-inactive", !activeCountry)
-                        .classed(c.Disease + "-active", activeCountry)
+                        //.classed(c.Disease + "-inactive", !activeCountry)
+                        //.classed(c.Disease + "-active", activeCountry)
                         .classed(c.Status + "Country", true);
+                    activeCountry ? d3.select("#" + c.Country).classed(c.Disease + "-active", true) : d3.select("#" + c.Country).classed(c.Disease + "-inactive", true);
                 }
             }
         });
