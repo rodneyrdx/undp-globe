@@ -119,9 +119,9 @@
             <div class="svg-wrapper">
                                          
                 <div class="legend">
-                    <div class="legend-item active-grant"><span></span>Active Grant</div>
+                    <div class="legend-item active-grant"><span></span>Active Country Grant</div>
                     <div class="legend-item active-reg-grant"><span></span>Active Regional Grant</div>
-                    <div class="legend-item inactive-grant"><span></span>Inactive Grant</div>
+                    <div class="legend-item inactive-grant"><span></span>Inactive Country Grant</div>
                 </div>
                 <h3 class="country-name-svg n"></h3>
                 <div class="scroll"><a href="#countryData"><span></span>Scroll to see results</a></div>
@@ -389,7 +389,7 @@
                     lines.push(highlight_column ? "<td class='highlight_column'>" : "<td>");
                     lines.push("<span class='dis-headline'>" + dis_to_str(ind.Disease) + " - <span>" + status_str);
                     lines.push("<hr>");
-                    lines.push("<div class='indicator'><span class='ind-name'>" + ind.Indicator + ": </span><span class='ind-value'>" + ind.Value + "</span></div>");
+                    lines.push("<div class='indicator'><span class='ind-name'>" + ind.Indicator + ": </span><span class='ind-value'>" + numberFormat(ind.Value) + "</span></div>");
                     lines.push("</td>")
                     if(ind.Link){
                         if(isGrant)
