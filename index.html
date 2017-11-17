@@ -364,6 +364,9 @@
 
             var isGrant = country_id.length == 4;
             var country = id_to_names[country_id];
+            if(isGrant){
+                country += "<br>( " + regional_grants[country_id].countries.length + " Countries )";
+            }
             var data = data_per_country[country_id];
 
             var lines = [];
