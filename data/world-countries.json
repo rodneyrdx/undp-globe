@@ -185,5 +185,6 @@
 {"type":"Feature","properties":{"name":"Palau"},"geometry":{"type":"Point","coordinates": [ 134.556378, 7.487181 ]},"id":"PLW"},
 {"type":"Feature","properties":{"name":"Samoa"},"geometry":{"type":"Point","coordinates": [ -172.492514, -13.642257 ]},"id":"WSM"},
 {"type":"Feature","properties":{"name":"Tonga"},"geometry":{"type":"Point","coordinates": [ -175.194238, -21.203125 ]},"id":"TON"},
-{"type":"Feature","properties":{"name":"Tuvalu"},"geometry":{"type":"Point","coordinates": [ 179.198660, -8.520136 ]},"id":"TUV"}
+{"type":"Feature","properties":{"name":"Tuvalu"},"geometry":{"type":"Point","coordinates": [ 179.198660, -8.520136 ]},"id":"TUV"},
+{"type":"Feature","properties":{"name":"São Tomé and Príncipe"},"geometry":{"type":"Point","coordinates": [ 6.618361, 0.259675 ]},"id":"STP"}
 ]}
