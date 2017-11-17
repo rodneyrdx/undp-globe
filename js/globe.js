@@ -171,6 +171,7 @@ var globe = function(options) {
 
         countryData.forEach(function(c) {
             var activeCountry = c.Status === "Active";
+            if(activeCountry){
             if (c.Country && c.Country.length <= 4) {
                 if (!data_per_country[c.Country]) {
                     data_per_country[c.Country] = {};
@@ -211,6 +212,7 @@ var globe = function(options) {
                         .classed(c.Status + "Country", true);
                     activeCountry ? d3.select("#" + c.Country).classed(c.Disease + "-active", true) : d3.select("#" + c.Country).classed(c.Disease + "-inactive", true);
                 }
+            }
             }
         });
 
