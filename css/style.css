@@ -473,7 +473,7 @@ a.globalfootercard--green:active {
 }
 
 .legend div {
-    cursor: pointer;
+    /*cursor: pointer;*/
 }
 
 .legend div span {

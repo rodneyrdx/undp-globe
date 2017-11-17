@@ -492,8 +492,8 @@
             $(".ActiveCountry.InactiveCountry").removeClass("InactiveCountry");
             updateLegend();
             //$(".InactiveCountry").toggleClass("country-off");
-            $(".legend-item.inactive-grant").addClass("off-legend");
-            $(".legend-item").click(function() {
+            //$(".legend-item.inactive-grant").addClass("off-legend");
+            /*$(".legend-item").click(function() {
                 
                 if($(this).hasClass("active-grant") && ($(".active-reg-grant").hasClass("off-legend") === $(".active-grant").hasClass("off-legend"))){
                     $(".active-reg-grant").toggleClass("off-legend");
@@ -507,12 +507,11 @@
                 var act = $(this).hasClass("active-grant");
                 if (disease) {
                     act ? $("." + disease + "-active").toggleClass("country-off") : $("." + disease + "-inactive").not("." + disease + "-active").toggleClass("country-off");
-                    //act ? $(".ActiveCountry").toggleClass("country-off") : $(".InactiveCountry").toggleClass("country-off");
                 } else {
                     act ? $(".ActiveCountry").toggleClass("country-off") : $(".InactiveCountry").toggleClass("country-off");
                 }
 
-            });
+            });*/
         }
 
 
