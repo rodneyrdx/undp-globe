@@ -116,7 +116,7 @@
                 </div>
                 
             </div>
-            <div class="svg-wrapper">
+            <div class="svg-wrapper" id="svg-world">
                                          
                 <div class="legend">
                     <div class="legend-item active-grant"><span></span>Active Country Grant</div>
@@ -124,7 +124,7 @@
                     <!--div class="legend-item inactive-grant"><span></span>Inactive Country Grant</div-->
                 </div>
                 <h3 class="country-name-svg n"></h3>
-                <div class="scroll"><a href="#countryData"><span></span>Scroll to see results</a></div>
+                <div class="scroll"><a href="#countryData" id="scroll-btn"><span></span>Scroll to see results</a></div>
             </div>
         </div>
         <div class="country-data n" id="countryData">
@@ -512,6 +512,16 @@
                 }
 
             });*/
+
+            $("#scroll-btn").on('click', function(event) {
+                var target = $(this.getAttribute('href'));
+                if( target.length ) {
+                    event.preventDefault();
+                    $('html, body').stop().animate({
+                        scrollTop: target.offset().top
+                    }, 1000);
+                }
+            });
         }
 
 
