@@ -517,10 +517,11 @@
                 var target = $(this.getAttribute('href'));
                 if( target.length ) {
                     event.preventDefault();
-                    var elem = window.parent.document.getElementsByTagName("html")[0];
+                    window.parent.postMessage({scroll:target.offset().top}, '*'); 
+                    /*var elem = window.parent.document.getElementsByTagName("html")[0];
                     $(elem).stop().animate({
                         scrollTop: target.offset().top
-                    }, 1000);
+                    }, 1000);*/
                 }
             });
         }
