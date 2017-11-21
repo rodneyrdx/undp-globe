@@ -5,6 +5,23 @@ body {
     font-family: "Lato", sans-serif;
 }
 
+
+h1 {
+    color: #3f444a;
+    font-size: 22px;
+    margin: 10px 0;
+    font-weight: 500;
+    line-height: 1.1;
+}
+
+h2 {
+    color: #3f444a;
+    font-size: 20px;
+    margin: 10px 0;
+    font-weight: 500;
+    line-height: 1.1;
+}
+
 .wrapper {
     margin: 0;
     padding: 0;
